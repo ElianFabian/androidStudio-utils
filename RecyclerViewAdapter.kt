@@ -3,15 +3,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.collections.ArrayList
 
 class RecyclerViewAdapter<T>(
-    private val list: ArrayList<T>,
     @LayoutRes private val itemLayout: Int,
     private val itemListener: RecyclerViewItemClickListener<T>,
 ) :
     RecyclerView.Adapter<RecyclerViewAdapter<T>.ViewHolder>()
 {
+	private val list = arrayListOf<T>()
+
     interface RecyclerViewItemClickListener<T>
     {
         fun onItemClick(v: View?, selectedItem: T, position: Int)
@@ -79,7 +79,7 @@ class RecyclerViewAdapter<T>(
 // 
 //    private fun initRecyclerViewAdapter()
 //    {
-//        rvAdapter = RecyclerViewAdapter(arrayListOf(), R.layout.item, this)
+//        rvAdapter = RecyclerViewAdapter(R.layout.item, this)
 //
 //        val layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 //

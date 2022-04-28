@@ -1,3 +1,5 @@
+package com.elian.efficientneuron.utils
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,25 +78,20 @@ class RecyclerViewAdapter<T>(
     {
         val item = list[position]
 
-        holder.render(item)
+        holder.itemView.setOnClickListener(holder)
+        holder.itemView.setOnLongClickListener(holder)
+
+        onBindViewHolderListener.onBindViewHolder(holder.itemView, item)
     }
 
     override fun getItemCount(): Int = list.size
 
     //endregion
 
-    inner class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view),
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view),
         View.OnClickListener,
         View.OnLongClickListener
     {
-        fun render(item: T)
-        {
-            view.setOnClickListener(this@ViewHolder)
-            view.setOnLongClickListener(this@ViewHolder)
-
-            onBindViewHolderListener.onBindViewHolder(view, item)
-        }
-
         override fun onClick(v: View?)
         {
             onItemCLickListener.onItemClick(v, list[layoutPosition], layoutPosition)

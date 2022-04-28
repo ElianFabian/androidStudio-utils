@@ -5,14 +5,14 @@ import android.widget.AdapterView
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
+import kotlin.collections.ArrayList
 
 class RecyclerViewAdapter<T>(
     @LayoutRes private val itemLayout: Int,
+    private val list: ArrayList<T> = arrayListOf()
 ) :
     RecyclerView.Adapter<RecyclerViewAdapter<T>.ViewHolder>()
 {
-    private val list = arrayListOf<T>()
-
     private var onItemCLickListener = OnItemClickListener<T> { _, _, _ -> }
     private var onItemLongCLickListener = OnItemLongClickListener<T> { _, _, _ -> false }
     private var onBindViewHolderListener = OnBindViewHolder<T> { _, _ -> }
@@ -32,7 +32,7 @@ class RecyclerViewAdapter<T>(
         fun onBindViewHolder(view: View, item: T)
     }
 
-    fun load(list: List<T>)
+    fun loadList(list: List<T>)
     {
         this.list.clear()
         this.list.addAll(list)

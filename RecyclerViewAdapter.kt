@@ -7,10 +7,18 @@ import kotlin.collections.ArrayList
 
 class RecyclerViewAdapter<T>(
     @LayoutRes private val itemLayout: Int,
-    private val list: ArrayList<T> = arrayListOf()
+    recyclerView: RecyclerView,
+    layoutManager: RecyclerView.LayoutManager,
+    private val list: ArrayList<T> = arrayListOf(),
 ) :
     RecyclerView.Adapter<RecyclerViewAdapter<T>.ViewHolder>()
 {
+    init
+    {
+        recyclerView.adapter = this
+        recyclerView.layoutManager = layoutManager
+    }
+
     private var onItemCLickListener = OnItemClickListener<T> { _, _, _ -> }
     private var onItemLongCLickListener = OnItemLongClickListener<T> { _, _, _ -> false }
     private var onBindViewHolderListener = OnBindViewHolderListener<T> { _, _ -> }
@@ -35,8 +43,7 @@ class RecyclerViewAdapter<T>(
         this.list.clear()
         this.list.addAll(list)
 
-		// You should use the appropiate method depending on your case
-        //notifyDataSetChanged()
+        notifyDataSetChanged()
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener<T>)

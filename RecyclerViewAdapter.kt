@@ -1,5 +1,3 @@
-package com.elian.efficientneuron.utils
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,10 +38,74 @@ class RecyclerViewAdapter<T>(
         fun onBindViewHolder(view: View, item: T, position: Int)
     }
 
-    fun loadList(list: List<T>)
+    fun clearList()
+    {
+        list.clear()
+        notifyDataSetChanged()
+    }
+
+    fun replaceList(newList: List<T>)
     {
         this.list.clear()
-        this.list.addAll(list)
+        this.list.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+    fun addItem(item: T)
+    {
+        list.add(item)
+        notifyItemInserted(itemCount)
+    }
+
+    fun insertItem(position: Int, item: T)
+    {
+        list.add(position, item)
+        notifyItemInserted(itemCount)
+    }
+
+    fun insertItems(insertPosition: Int, items: List<T>)
+    {
+        list.addAll(insertPosition, items)
+        notifyItemRangeInserted(insertPosition, items.size)
+    }
+
+    fun updateItem(position: Int, updatedItem: T)
+    {
+        list[position] = updatedItem
+        notifyItemChanged(position)
+    }
+
+    fun moveItem(fromPosition: Int, toPosition: Int, item: T)
+    {
+        list.removeAt(fromPosition)
+        list.add(toPosition, item)
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
+    /**
+     * @return False if the list doesn't contains the item.
+     */
+    fun removeItem(item: T): Boolean
+    {
+        if (list.contains(item))
+        {
+            val position = list.indexOf(item)
+
+            list.remove(item)
+            notifyItemRemoved(position)
+
+            return true
+        }
+
+        return false
+    }
+
+    fun removeItems(fromPosition: Int, count: Int)
+    {
+        val toPosition = fromPosition + count
+
+        list.subList(fromPosition, toPosition).clear()
+        notifyItemRangeRemoved(fromPosition, toPosition)
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener<T>)

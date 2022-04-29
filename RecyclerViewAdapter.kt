@@ -44,8 +44,6 @@ class RecyclerViewAdapter<T>(
     {
         this.list.clear()
         this.list.addAll(list)
-
-        notifyDataSetChanged()
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener<T>)

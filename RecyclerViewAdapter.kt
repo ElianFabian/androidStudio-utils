@@ -100,6 +100,12 @@ class RecyclerViewAdapter<T>(
         return false
     }
 
+    fun removeItem(position: Int)
+    {
+        list.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     fun removeItems(fromPosition: Int, count: Int)
     {
         val toPosition = fromPosition + count

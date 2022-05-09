@@ -11,19 +11,18 @@ open class RecyclerViewAdapter<T>(
 ) :
     RecyclerView.Adapter<RecyclerViewAdapter<T>.ViewHolder>()
 {
-
     private var onItemCLickListener = OnItemClickListener<T> { _, _, _ -> }
     private var onItemLongCLickListener = OnItemLongClickListener<T> { _, _, _ -> false }
     private var onBindViewHolderListener = OnBindViewHolderListener<T> { _, _, _ -> }
 
     fun interface OnItemClickListener<T>
     {
-        fun onItemClick(v: View?, selectedItem: T, position: Int)
+        fun onItemClick(v: View?, clickedItem: T, position: Int)
     }
 
     fun interface OnItemLongClickListener<T>
     {
-        fun onItemLongClick(v: View?, selectedItem: T, position: Int): Boolean
+        fun onItemLongClick(v: View?, clickedItem: T, position: Int): Boolean
     }
 
     fun interface OnBindViewHolderListener<T>
@@ -39,8 +38,8 @@ open class RecyclerViewAdapter<T>(
 
     fun replaceList(newList: List<T>)
     {
-        this.list.clear()
-        this.list.addAll(newList)
+        list.clear()
+        list.addAll(newList)
         notifyDataSetChanged()
     }
 

@@ -17,12 +17,12 @@ open class RecyclerViewAdapter<T>(
 
     fun interface OnItemClickListener<T>
     {
-        fun onItemClick(v: View?, clickedItem: T, position: Int)
+        fun onItemClick(v: View?, selectedItem: T, position: Int)
     }
 
     fun interface OnItemLongClickListener<T>
     {
-        fun onItemLongClick(v: View?, clickedItem: T, position: Int): Boolean
+        fun onItemLongClick(v: View?, selectedItem: T, position: Int): Boolean
     }
 
     fun interface OnBindViewHolderListener<T>

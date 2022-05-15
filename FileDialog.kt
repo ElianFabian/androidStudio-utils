@@ -6,24 +6,26 @@ import androidx.fragment.app.Fragment
 
 class FileDialog(fragment: Fragment)
 {
-    private lateinit var listener: (Uri) -> Unit
+    fun interface OnFileSelectedListener
+    {
+        fun onFileSelected(uri: Uri)
+    }
+
+    private lateinit var onFileSelectedListener: OnFileSelectedListener
 
     private var resultLauncher = fragment.registerForActivityResult(StartActivityForResult())
     {
         if (it.resultCode != Activity.RESULT_OK) return@registerForActivityResult
 
-        it.data?.data.let { uri -> listener(uri!!) }
+        it.data?.data.let { uri -> onFileSelectedListener.onFileSelected(uri!!) }
     }
 
-    fun open(accept: String = "*/*", listener: (Uri) -> Unit)
+    fun open(accept: String = "*/*", listener: OnFileSelectedListener) = Intent().apply()
     {
-        this.listener = listener
+        onFileSelectedListener = listener
 
-        Intent().apply()
-        {
-            type = accept
-            action = Intent.ACTION_GET_CONTENT
-            resultLauncher.launch(Intent.createChooser(this, ""))
-        }
+        type = accept
+        action = Intent.ACTION_GET_CONTENT
+        resultLauncher.launch(Intent.createChooser(this, ""))
     }
 }

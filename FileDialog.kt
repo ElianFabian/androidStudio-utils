@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
 
-class FileDialog(fragment: Fragment)
+class FileDialog(fragment: Fragment, var filter: String = "*/*")
 {
     fun interface OnFileSelectedListener
     {
@@ -20,11 +20,11 @@ class FileDialog(fragment: Fragment)
         it.data?.data.let { uri -> onFileSelectedListener.onFileSelected(uri!!) }
     }
 
-    fun open(accept: String = "*/*", listener: OnFileSelectedListener) = Intent().apply()
+    fun open(listener: OnFileSelectedListener) = Intent().apply()
     {
         onFileSelectedListener = listener
 
-        type = accept
+        type = filter
         action = Intent.ACTION_GET_CONTENT
         resultLauncher.launch(Intent.createChooser(this, ""))
     }

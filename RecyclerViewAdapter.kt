@@ -3,11 +3,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.collections.ArrayList
 
 open class RecyclerViewAdapter<T>(
     @LayoutRes private val itemLayout: Int,
-    private val list: ArrayList<T> = arrayListOf(),
+    private val list: MutableList<T> = mutableListOf(),
 ) :
     RecyclerView.Adapter<RecyclerViewAdapter<T>.ViewHolder>()
 {

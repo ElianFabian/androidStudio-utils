@@ -10,7 +10,7 @@ import java.util.*
 class DatePickerFragment(private val listener: OnDateSelectedListener) : DialogFragment(),
     DatePickerDialog.OnDateSetListener
 {
-    interface OnDateSelectedListener
+    fun interface OnDateSelectedListener
     {
         fun onDateSelected(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int)
 

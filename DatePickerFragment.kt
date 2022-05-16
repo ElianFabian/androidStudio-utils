@@ -10,13 +10,13 @@ import java.util.*
 class DatePickerFragment(private val listener: OnDateSelectedListener) : DialogFragment(),
     DatePickerDialog.OnDateSetListener
 {
-    fun interface OnDateSelectedListener
+    interface OnDateSelectedListener
     {
         fun onDateSelected(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int)
 
-        fun showDatePickerDialog(fragment: Fragment, listener: OnDateSelectedListener = fragment as OnDateSelectedListener)
+        fun showDatePickerDialog(fragment: Fragment)
         {
-            val datePickerFragment = DatePickerFragment(listener)
+            val datePickerFragment = DatePickerFragment(fragment as OnDateSelectedListener)
 
             datePickerFragment.show(fragment.parentFragmentManager, "datePicker")
         }

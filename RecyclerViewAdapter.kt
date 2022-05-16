@@ -29,6 +29,8 @@ open class RecyclerViewAdapter<T>(
         fun onBindViewHolder(view: View, item: T, position: Int)
     }
 
+    val isEmpty get() = itemCount == 0
+
     fun clearList()
     {
         list.clear()

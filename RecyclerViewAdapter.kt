@@ -53,7 +53,7 @@ open class RecyclerViewAdapter<T : Any>(
     fun insertItem(position: Int, item: T)
     {
         list.add(position, item)
-        notifyItemInserted(itemCount)
+        notifyItemInserted(position)
     }
 
     fun insertItems(insertPosition: Int, items: List<T>)

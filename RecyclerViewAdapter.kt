@@ -80,17 +80,14 @@ open class RecyclerViewAdapter<T : Any>(
      */
     fun removeItem(item: T): Boolean
     {
-        if (list.contains(item))
-        {
-            val position = list.indexOf(item)
+        val position = list.indexOf(item)
 
-            list.remove(item)
-            notifyItemRemoved(position)
+        if (position == -1) return false
 
-            return true
-        }
+        list.remove(item)
+        notifyItemRemoved(position)
 
-        return false
+        return true
     }
 
     fun removeItem(position: Int)

@@ -13,3 +13,8 @@ fun Fragment.toast(text: CharSequence, duration: Int = Toast.LENGTH_SHORT)
 {
     Toast.makeText(context, text, duration).show()
 }
+
+fun Fragment.toast(@StringRes resId: Int, duration: Int = Toast.LENGTH_SHORT)
+{
+    Toast.makeText(context, resId, duration).show()
+}

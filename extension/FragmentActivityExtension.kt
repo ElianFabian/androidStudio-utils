@@ -3,7 +3,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 
 
-fun FragmentActivity.goToFragment(fragment: Fragment, args: Bundle? = null)
+fun FragmentActivity.goToFragment(fragment: Fragment, args: Bundle? = null): Fragment
 {
     fragment.arguments = args
 
@@ -12,4 +12,6 @@ fun FragmentActivity.goToFragment(fragment: Fragment, args: Bundle? = null)
         replace(R.id.nav_host_fragment, fragment)
         commit()
     }
+	
+	return fragment
 }

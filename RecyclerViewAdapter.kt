@@ -84,7 +84,7 @@ open class RecyclerViewAdapter<T : Any>(
 
         if (position == -1) return false
 
-        list.remove(item)
+        list.removeAt(position)
         notifyItemRemoved(position)
 
         return true

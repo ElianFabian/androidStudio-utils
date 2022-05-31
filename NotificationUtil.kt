@@ -26,10 +26,7 @@ class NotificationUtil(
     {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
-		val channel = NotificationChannel(channelId, channelName, importance).apply()
-		{
-			lambdaChannel()
-		}
+		val channel = NotificationChannel(channelId, channelName, importance).apply(lambdaChannel)
 
 		val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

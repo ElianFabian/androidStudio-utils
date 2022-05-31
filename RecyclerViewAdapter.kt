@@ -10,9 +10,9 @@ open class RecyclerViewAdapter<T : Any>(
 ) :
     RecyclerView.Adapter<RecyclerViewAdapter<T>.ViewHolder>()
 {
-    private var onItemClickListener = OnItemClickListener<T> { _, _, _ -> }
-    private var onItemLongClickListener = OnItemLongClickListener<T> { _, _, _ -> false }
-    private var onBindViewHolderListener = OnBindViewHolderListener<T> { _, _, _ -> }
+    private var onItemClickListener: OnItemClickListener<T>? = null
+    private var onItemLongClickListener: OnItemLongClickListener<T>? = null
+    private var onBindViewHolderListener: OnBindViewHolderListener<T>? = null
 
     fun interface OnItemClickListener<T>
     {
@@ -123,9 +123,9 @@ open class RecyclerViewAdapter<T : Any>(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
     {
-        val layoutInflater = LayoutInflater.from(parent.context)
+        val inflater = LayoutInflater.from(parent.context)
 
-        val view = layoutInflater.inflate(itemLayout, parent, false)
+        val view = inflater.inflate(itemLayout, parent, false)
 
         return ViewHolder(view)
     }
@@ -137,7 +137,7 @@ open class RecyclerViewAdapter<T : Any>(
         holder.itemView.setOnClickListener(holder)
         holder.itemView.setOnLongClickListener(holder)
 
-        onBindViewHolderListener.onBindViewHolder(holder.itemView, item, position)
+        onBindViewHolderListener?.onBindViewHolder(holder.itemView, item, position)
     }
 
     override fun getItemCount(): Int = list.size
@@ -150,12 +150,12 @@ open class RecyclerViewAdapter<T : Any>(
     {
         override fun onClick(v: View?)
         {
-            onItemClickListener.onItemClick(v, list[layoutPosition], layoutPosition)
+            onItemClickListener?.onItemClick(v, list[layoutPosition], layoutPosition)
         }
 
         override fun onLongClick(v: View?): Boolean
         {
-            return onItemLongClickListener.onItemLongClick(v, list[layoutPosition], layoutPosition)
+            return onItemLongClickListener?.onItemLongClick(v, list[layoutPosition], layoutPosition) ?: false
         }
     }
 }

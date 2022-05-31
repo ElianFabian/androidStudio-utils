@@ -1,5 +1,3 @@
-package com.elian.efficientneuron.util.extension
-
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,6 +10,7 @@ class NotificationUtil(
     private val context: Context,
     val channelId: String,
     val channelName: String,
+    val notificationId: Int = 0,
     val importance: Int = NotificationManager.IMPORTANCE_DEFAULT,
 )
 {
@@ -20,7 +19,7 @@ class NotificationUtil(
 
     fun showNotification()
     {
-        notificationManager.notify(0, notification)
+        notificationManager.notify(notificationId, notification)
     }
 
     fun createNotificationChannel(lambdaChannel: NotificationChannel.() -> Unit)

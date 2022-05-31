@@ -25,8 +25,6 @@ class NotificationUtil(
 
     fun createNotificationChannel(lambdaChannel: NotificationChannel.() -> Unit)
     {
-        notificationManager = NotificationManagerCompat.from(context)
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
 		val channel = NotificationChannel(channelId, channelName, importance).apply()
@@ -42,5 +40,7 @@ class NotificationUtil(
     fun createNotification(lambdaNotificationBuilder: NotificationCompat.Builder.() -> Unit)
     {
         notification = NotificationCompat.Builder(context, channelId).also(lambdaNotificationBuilder).build()
+		
+		notificationManager = NotificationManagerCompat.from(context)
     }
 }

@@ -48,10 +48,7 @@ open class RecyclerViewAdapter<T : Any>(
         notifyDataSetChanged()
     }
     
-    fun getItem(position: Int): T?
-    {
-        return if (position < 0 || position >= itemCount) null else list[position]
-    }
+    fun getItem(position: Int): T = list[position]
 
     fun addItem(item: T)
     {

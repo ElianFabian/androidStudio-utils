@@ -47,6 +47,11 @@ open class RecyclerViewAdapter<T : Any>(
         list.addAll(newList)
         notifyDataSetChanged()
     }
+    
+    fun getItem(position: Int): T?
+    {
+        return if (position < 0 || position >= itemCount) null else list[position]
+    }
 
     fun addItem(item: T)
     {
@@ -94,7 +99,7 @@ open class RecyclerViewAdapter<T : Any>(
         return true
     }
 
-    fun removeItem(position: Int)
+    fun removeItemAt(position: Int)
     {
         list.removeAt(position)
         notifyItemRemoved(position)

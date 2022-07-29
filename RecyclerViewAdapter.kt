@@ -62,10 +62,10 @@ open class RecyclerViewAdapter<T : Any>(
         notifyItemInserted(position)
     }
 
-    fun insertItems(insertPosition: Int, items: List<T>)
+    fun insertItemList(insertPosition: Int, itemList: List<T>)
     {
-        list.addAll(insertPosition, items)
-        notifyItemRangeInserted(insertPosition, items.size)
+        list.addAll(insertPosition, itemList)
+        notifyItemRangeInserted(insertPosition, itemList.size)
     }
 
     fun updateItem(position: Int, updatedItem: T)
@@ -102,7 +102,7 @@ open class RecyclerViewAdapter<T : Any>(
         notifyItemRemoved(position)
     }
 
-    fun removeItems(fromPosition: Int, count: Int)
+    fun removeItemRange(fromPosition: Int, count: Int)
     {
         val toPosition = fromPosition + count
 

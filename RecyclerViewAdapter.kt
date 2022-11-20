@@ -1,3 +1,5 @@
+package com.elian.taskproject.util
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,8 @@ open class RecyclerViewAdapter<T : Any>(
 ) :
     RecyclerView.Adapter<RecyclerViewAdapter<T>.ViewHolder>()
 {
+    val itemList get() = list
+    
     private var onItemClickListener: OnItemClickListener<T>? = null
     private var onItemLongClickListener: OnItemLongClickListener<T>? = null
     private var onBindViewHolderListener: OnBindViewHolderListener<T>? = null
@@ -43,6 +47,8 @@ open class RecyclerViewAdapter<T : Any>(
         list.addAll(newList)
         notifyDataSetChanged()
     }
+    
+    fun getItem(position: Int): T = list[position]
 
     fun addItem(item: T)
     {
@@ -56,10 +62,10 @@ open class RecyclerViewAdapter<T : Any>(
         notifyItemInserted(position)
     }
 
-    fun insertItems(insertPosition: Int, items: List<T>)
+    fun insertItemList(insertPosition: Int, itemList: List<T>)
     {
-        list.addAll(insertPosition, items)
-        notifyItemRangeInserted(insertPosition, items.size)
+        list.addAll(insertPosition, itemList)
+        notifyItemRangeInserted(insertPosition, itemList.size)
     }
 
     fun updateItem(position: Int, updatedItem: T)
@@ -90,13 +96,13 @@ open class RecyclerViewAdapter<T : Any>(
         return true
     }
 
-    fun removeItem(position: Int)
+    fun removeItemAt(position: Int)
     {
         list.removeAt(position)
         notifyItemRemoved(position)
     }
 
-    fun removeItems(fromPosition: Int, count: Int)
+    fun removeItemRange(fromPosition: Int, count: Int)
     {
         val toPosition = fromPosition + count
 

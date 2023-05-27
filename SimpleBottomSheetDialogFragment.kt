@@ -1,5 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
+import android.os.Bundle
 import android.os.Parcelable
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment

@@ -271,8 +271,8 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 		 * Returns a new instance of the given SimpleBottomSheetDialog in getNewInstance
 		 * with the specified id and args.
 		 *
-		 * @param id Should identifies a single `SimpleBottomSheetDialogFragment` instance, use it when you multiple instances
-		 * in the same fragment or activity to allow events work properly.
+		 * @param id Should identify a single `SimpleBottomSheetDialogFragment` instance. Use it when multiple instances
+		 * are required in the same fragment or activity to allow events work properly.
 		 * @param args The data to pass when instantiating the dialog.
 		 * @param getNewInstance A lambda function that creates the instance of the desired `SimpleBottomSheetDialogFragment`.
 		 *

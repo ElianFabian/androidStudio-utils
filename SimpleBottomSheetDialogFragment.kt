@@ -280,7 +280,7 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 		 */
 		@JvmStatic
 		protected inline fun <TArgs : Parcelable, T : SimpleBottomSheetDialogFragment<TArgs, *>> baseNewInstance(
-			id: String?,
+			id: String? = null,
 			args: TArgs? = null,
 			getNewInstance: () -> T,
 		): T {

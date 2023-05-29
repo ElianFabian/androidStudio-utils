@@ -2,6 +2,7 @@
 
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -66,8 +67,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
  *
  * // Define a custom newInstance() function
  * companion object {
- * 	fun newInstance(args: Args) = MyBottomSheetDialogFragment().apply {
- * 		arguments = createBundleFromDialogArgs(args)
+ * 	fun newInstance(id: String? = null, args: Args? = null) = baseNewInstance(id, args) {
+ * 		MyBottomSheetDialogFragment()
  * 	}
  * }
  *
@@ -105,6 +106,32 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 	constructor()
 
 	constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
+
+
+	var dialogId: String? = null
+		private set
+
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+
+		dialogId = savedInstanceState?.getString("dialogId") ?: this::class.qualifiedName
+
+		println("$$$$ onCreate id = $dialogId")
+	}
+
+	@CallSuper
+	override fun onSaveInstanceState(outState: Bundle) {
+		super.onSaveInstanceState(outState)
+
+		outState.putString("dialogId", dialogId)
+	}
+
+	override fun onViewStateRestored(savedInstanceState: Bundle?) {
+		super.onViewStateRestored(savedInstanceState)
+
+		dialogId = savedInstanceState?.getString("dialogId") ?: return
+	}
 
 
 	/**
@@ -147,7 +174,7 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 			arguments = createBundleFromDialogArgs(args)
 		}
 
-		show(manager, this::class.qualifiedName)
+		show(manager, dialogId)
 	}
 
 	/**
@@ -159,7 +186,7 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 	 *
 	 * @throws IllegalArgumentException if attempting to set an event listener on the same dialog fragment instance.
 	 */
-	inline fun setOnEventListener(
+	inline fun setEventListener(
 		fragment: Fragment,
 		crossinline onEvent: (event: TEvent) -> Unit,
 	) {
@@ -167,7 +194,7 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 			throw IllegalStateException("Cannot set event listener on the same dialog fragment instance: ${fragment::class.qualifiedName}.")
 		}
 
-		setOnEventListener(fragment.childFragmentManager, fragment.viewLifecycleOwner, onEvent)
+		setEventListener(fragment.childFragmentManager, fragment.viewLifecycleOwner, onEvent)
 	}
 
 	/**
@@ -177,11 +204,11 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 	 * @param activity The FragmentActivity instance on which to set the event listener.
 	 * @param onEvent The lambda that will be invoked when an event is received.
 	 */
-	inline fun setOnEventListener(
+	inline fun setEventListener(
 		activity: FragmentActivity,
 		crossinline onEvent: (event: TEvent) -> Unit,
 	) {
-		setOnEventListener(activity.supportFragmentManager, activity, onEvent)
+		setEventListener(activity.supportFragmentManager, activity, onEvent)
 	}
 
 	/**
@@ -192,13 +219,15 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 	 * @param lifecycleOwner The lifecycle owner for the event listener.
 	 * @param onEvent The lambda that will be invoked when an event is received.
 	 */
-	inline fun setOnEventListener(
+	inline fun setEventListener(
 		fragmentManager: FragmentManager,
 		lifecycleOwner: LifecycleOwner,
 		crossinline onEvent: (event: TEvent) -> Unit,
 	) {
+		println("$$$$ setEventListener ${hashCode()} id = $dialogId")
+
 		fragmentManager.setFragmentResultListener(
-			this::class.qualifiedName!!,
+			dialogId!!,
 			lifecycleOwner,
 		) { _, bundle ->
 			onEvent(bundle.getParcelable("event")!!)
@@ -208,12 +237,12 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 	/**
 	 * Clears the previously set dialog event.
 	 */
-	inline fun clearDialogEvent() = clearFragmentResult(this::class.qualifiedName!!)
+	inline fun clearDialogEvent() = clearFragmentResult(dialogId!!)
 
 	/**
 	 * Clears the previously set dialog event listener.
 	 */
-	inline fun clearDialogEventListener() = clearFragmentResultListener(this::class.qualifiedName!!)
+	inline fun clearDialogEventListener() = clearFragmentResultListener(dialogId!!)
 
 
 	/**
@@ -221,14 +250,14 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 	 *
 	 * @param event The event object to send.
 	 */
-	protected inline fun sendDialogEvent(event: TEvent) = setFragmentResult(this::class.qualifiedName!!, bundleOf("event" to event))
+	protected fun sendDialogEvent(event: TEvent) = setFragmentResult(dialogId!!, bundleOf("event" to event))
 
 	/**
 	 * Retrieves the arguments (`TArgs`) that were passed when the dialog it's shown or instantiated using a custom `newInstance()` function.
 	 *
 	 * @return The dialog arguments if available, or null if no arguments were provided.
 	 */
-	protected inline val dialogArguments: TArgs? get() = arguments?.getParcelable("args")
+	protected val dialogArguments: TArgs? get() = arguments?.getParcelable("args")
 
 	/**
 	 * Creates a bundle with the specified `TArgs`.
@@ -238,4 +267,32 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 	 * @return A bundle containing the specified arguments.
 	 */
 	protected inline fun createBundleFromDialogArgs(args: TArgs): Bundle = bundleOf("args" to args)
+
+
+	companion object {
+
+		/**
+		 * Returns a new instance of the given SimpleBottomSheetDialog in getNewInstance
+		 * with the specified id and args.
+		 *
+		 * @param id Identifies a single `SimpleBottomSheetDialogFragment` instance, use it when you multiple instances
+		 * in the same fragment or activity to allow events work properly.
+		 * @param args The data to pass when instantiating the dialog.
+		 * @param getNewInstance A lambda function that creates the instance of the desired `SimpleBottomSheetDialogFragment`.
+		 *
+		 * @return A new instance of the specified `SimpleBottomSheetDialogFragment`.
+		 */
+		@JvmStatic
+		protected inline fun <TArgs : Parcelable, T : SimpleBottomSheetDialogFragment<TArgs, *>> baseNewInstance(
+			id: String?,
+			args: TArgs? = null,
+			getNewInstance: () -> T,
+		): T {
+			return getNewInstance().apply {
+				if (args != null) {
+					arguments = createBundleFromDialogArgs(args)
+				}
+			}
+		}
+	}
 }

@@ -265,7 +265,7 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 	protected inline fun createBundleFromDialogArgs(args: TArgs): Bundle = bundleOf("args" to args)
 
 
-	companion object {
+	protected companion object {
 
 		/**
 		 * Returns a new instance of the given SimpleBottomSheetDialog in getNewInstance
@@ -278,8 +278,7 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 		 *
 		 * @return A new instance of the specified `SimpleBottomSheetDialogFragment`.
 		 */
-		@JvmStatic
-		protected inline fun <TArgs : Parcelable, T : SimpleBottomSheetDialogFragment<TArgs, *>> baseNewInstance(
+		inline fun <TArgs : Parcelable, T : SimpleBottomSheetDialogFragment<TArgs, *>> baseNewInstance(
 			id: String? = null,
 			args: TArgs? = null,
 			getNewInstance: () -> T,

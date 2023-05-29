@@ -109,15 +109,13 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 
 
 	var dialogId: String? = null
-		private set
+		protected set
 
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		dialogId = savedInstanceState?.getString("dialogId") ?: this::class.qualifiedName
-
-		println("$$$$ onCreate id = $dialogId")
+		dialogId = dialogId ?: savedInstanceState?.getString("dialogId") ?: this::class.qualifiedName
 	}
 
 	@CallSuper
@@ -224,8 +222,6 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 		lifecycleOwner: LifecycleOwner,
 		crossinline onEvent: (event: TEvent) -> Unit,
 	) {
-		println("$$$$ setEventListener ${hashCode()} id = $dialogId")
-
 		fragmentManager.setFragmentResultListener(
 			dialogId!!,
 			lifecycleOwner,
@@ -275,7 +271,7 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 		 * Returns a new instance of the given SimpleBottomSheetDialog in getNewInstance
 		 * with the specified id and args.
 		 *
-		 * @param id Identifies a single `SimpleBottomSheetDialogFragment` instance, use it when you multiple instances
+		 * @param id Should identifies a single `SimpleBottomSheetDialogFragment` instance, use it when you multiple instances
 		 * in the same fragment or activity to allow events work properly.
 		 * @param args The data to pass when instantiating the dialog.
 		 * @param getNewInstance A lambda function that creates the instance of the desired `SimpleBottomSheetDialogFragment`.
@@ -289,9 +285,8 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
 			getNewInstance: () -> T,
 		): T {
 			return getNewInstance().apply {
-				if (args != null) {
-					arguments = createBundleFromDialogArgs(args)
-				}
+				dialogId = id ?: SimpleBottomSheetDialogFragment::class.qualifiedName
+				if (args != null) arguments = createBundleFromDialogArgs(args)
 			}
 		}
 	}

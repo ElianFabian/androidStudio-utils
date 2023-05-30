@@ -277,7 +277,7 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
          *
          * @return A new instance of the specified `SimpleBottomSheetDialogFragment`.
          */
-        inline fun <TArgs : Parcelable, T : SimpleBottomSheetDialogFragment<TArgs, *>> baseNewInstance(
+        inline fun <TArgs : Parcelable,TEvent : Parcelable, T : SimpleBottomSheetDialogFragment<TArgs, TEvent>> baseNewInstance(
             id: String? = null,
             args: TArgs? = null,
             getNewInstance: () -> T,

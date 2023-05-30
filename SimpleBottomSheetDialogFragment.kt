@@ -287,7 +287,9 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
             getNewInstance: () -> T,
         ): T {
             return getNewInstance().apply {
+
                 dialogId = id ?: this::class.qualifiedName
+
                 if (args != null) {
                     arguments = createBundleFromDialogArgs(args)
                 }

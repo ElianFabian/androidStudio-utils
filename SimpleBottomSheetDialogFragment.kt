@@ -103,190 +103,189 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
  */
 abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parcelable> : BottomSheetDialogFragment {
 
-	constructor()
+    constructor()
 
-	constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
-
-
-	var dialogId: String? = null
-		protected set
+    constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
 
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-
-		dialogId = dialogId ?: savedInstanceState?.getString("dialogId") ?: this::class.qualifiedName
-	}
-
-	@CallSuper
-	override fun onSaveInstanceState(outState: Bundle) {
-		super.onSaveInstanceState(outState)
-
-		outState.putString("dialogId", dialogId)
-	}
-
-	override fun onViewStateRestored(savedInstanceState: Bundle?) {
-		super.onViewStateRestored(savedInstanceState)
-
-		dialogId = savedInstanceState?.getString("dialogId") ?: return
-	}
+    var dialogId: String? = null
+        protected set
 
 
-	/**
-	 * Shows the dialog with the specified arguments.
-	 *
-	 * @param fragment The fragment that shows the dialog.
-	 * @param args The arguments to be passed to the dialog.
-	 *
-	 * @throws IllegalStateException if the specified fragment is the same as the dialog instance.
-	 */
-	inline fun show(fragment: Fragment, args: TArgs? = null) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-		if (fragment == this) {
-			throw IllegalStateException("Cannot use the same dialog instance to show itself: ${fragment::class.qualifiedName}.")
-		}
+        dialogId = dialogId ?: savedInstanceState?.getString("dialogId") ?: this::class.qualifiedName
+    }
 
-		show(fragment.childFragmentManager, args)
-	}
+    @CallSuper
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
 
-	/**
-	 * Shows the dialog with the specified arguments.
-	 *
-	 * @param activity The activity that shows the dialog.
-	 * @param args The arguments to be passed to the dialog.
-	 */
-	inline fun show(activity: FragmentActivity, args: TArgs? = null) {
+        outState.putString("dialogId", dialogId)
+    }
 
-		show(activity.supportFragmentManager, args)
-	}
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
-	/**
-	 * Shows the dialog with the specified arguments.
-	 *
-	 * @param manager The FragmentManager instance to show the dialog.
-	 * @param args The arguments to be passed to the dialog.
-	 */
-	fun show(manager: FragmentManager, args: TArgs? = null) {
-
-		if (args != null) {
-			arguments = createBundleFromDialogArgs(args)
-		}
-
-		show(manager, dialogId)
-	}
-
-	/**
-	 * Sets an event listener for the specified fragment.
-	 * The `onEvent` lambda will be executed whenever the `sendDialogEvent()` function is called.
-	 *
-	 * @param fragment The fragment instance on which to set the event listener.
-	 * @param onEvent The lambda that will be invoked when an event is received.
-	 *
-	 * @throws IllegalArgumentException if attempting to set an event listener on the same dialog fragment instance.
-	 */
-	inline fun setEventListener(
-		fragment: Fragment,
-		crossinline onEvent: (event: TEvent) -> Unit,
-	) {
-		if (fragment == this) {
-			throw IllegalStateException("Cannot set event listener on the same dialog fragment instance: ${fragment::class.qualifiedName}.")
-		}
-
-		setEventListener(fragment.childFragmentManager, fragment.viewLifecycleOwner, onEvent)
-	}
-
-	/**
-	 * Sets an event listener for the specified activity.
-	 * The `onEvent` lambda will be executed whenever the `sendDialogEvent()` function is called.
-	 *
-	 * @param activity The FragmentActivity instance on which to set the event listener.
-	 * @param onEvent The lambda that will be invoked when an event is received.
-	 */
-	inline fun setEventListener(
-		activity: FragmentActivity,
-		crossinline onEvent: (event: TEvent) -> Unit,
-	) {
-		setEventListener(activity.supportFragmentManager, activity, onEvent)
-	}
-
-	/**
-	 * Sets an event listener for the specified fragment manager and lifecycle owner.
-	 * The `onEvent` lambda will be executed whenever the `sendDialogEvent()` function is called.
-	 *
-	 * @param fragmentManager The fragment manager instance.
-	 * @param lifecycleOwner The lifecycle owner for the event listener.
-	 * @param onEvent The lambda that will be invoked when an event is received.
-	 */
-	inline fun setEventListener(
-		fragmentManager: FragmentManager,
-		lifecycleOwner: LifecycleOwner,
-		crossinline onEvent: (event: TEvent) -> Unit,
-	) {
-		fragmentManager.setFragmentResultListener(
-			dialogId!!,
-			lifecycleOwner,
-		) { _, bundle ->
-			onEvent(bundle.getParcelable("event")!!)
-		}
-	}
-
-	/**
-	 * Clears the previously set dialog event.
-	 */
-	inline fun clearDialogEvent() = clearFragmentResult(dialogId!!)
-
-	/**
-	 * Clears the previously set dialog event listener.
-	 */
-	inline fun clearDialogEventListener() = clearFragmentResultListener(dialogId!!)
+        dialogId = savedInstanceState?.getString("dialogId") ?: return
+    }
 
 
-	/**
-	 * Sends an event that will be received by the `onEvent` lambda parameter of the `setOnEventListener()` function.
-	 *
-	 * @param event The event object to send.
-	 */
-	protected fun sendDialogEvent(event: TEvent) = setFragmentResult(dialogId!!, bundleOf("event" to event))
+    /**
+     * Shows the dialog with the specified arguments.
+     *
+     * @param fragment The fragment that shows the dialog.
+     * @param args The arguments to be passed to the dialog.
+     *
+     * @throws IllegalStateException if the specified fragment is the same as the dialog instance.
+     */
+    inline fun show(fragment: Fragment, args: TArgs? = null) {
 
-	/**
-	 * Retrieves the arguments (`TArgs`) that were passed when the dialog it's shown or instantiated using a custom `newInstance()` function.
-	 *
-	 * @return The dialog arguments if available, or null if no arguments were provided.
-	 */
-	protected val dialogArguments: TArgs? get() = arguments?.getParcelable("args")
+        if (fragment == this) {
+            throw IllegalStateException("Cannot use the same dialog instance to show itself: ${fragment::class.qualifiedName}.")
+        }
 
-	/**
-	 * Creates a bundle with the specified `TArgs`.
-	 * This function should be used when defining a `newInstance()` function.
-	 *
-	 * @param args The arguments object to include in the bundle.
-	 * @return A bundle containing the specified arguments.
-	 */
-	protected inline fun createBundleFromDialogArgs(args: TArgs): Bundle = bundleOf("args" to args)
+        show(fragment.childFragmentManager, args)
+    }
+
+    /**
+     * Shows the dialog with the specified arguments.
+     *
+     * @param activity The activity that shows the dialog.
+     * @param args The arguments to be passed to the dialog.
+     */
+    inline fun show(activity: FragmentActivity, args: TArgs? = null) {
+
+        show(activity.supportFragmentManager, args)
+    }
+
+    /**
+     * Shows the dialog with the specified arguments.
+     *
+     * @param manager The FragmentManager instance to show the dialog.
+     * @param args The arguments to be passed to the dialog.
+     */
+    fun show(manager: FragmentManager, args: TArgs? = null) {
+
+        if (args != null) {
+            arguments = createBundleFromDialogArgs(args)
+        }
+
+        show(manager, dialogId)
+    }
+
+    /**
+     * Sets an event listener for the specified fragment.
+     * The `onEvent` lambda will be executed whenever the `sendDialogEvent()` function is called.
+     *
+     * @param fragment The fragment instance on which to set the event listener.
+     * @param onEvent The lambda that will be invoked when an event is received.
+     *
+     * @throws IllegalArgumentException if attempting to set an event listener on the same dialog fragment instance.
+     */
+    inline fun setEventListener(
+        fragment: Fragment,
+        crossinline onEvent: (event: TEvent) -> Unit,
+    ) {
+        if (fragment == this) {
+            throw IllegalStateException("Cannot set event listener on the same dialog fragment instance: ${fragment::class.qualifiedName}.")
+        }
+
+        setEventListener(fragment.childFragmentManager, fragment.viewLifecycleOwner, onEvent)
+    }
+
+    /**
+     * Sets an event listener for the specified activity.
+     * The `onEvent` lambda will be executed whenever the `sendDialogEvent()` function is called.
+     *
+     * @param activity The FragmentActivity instance on which to set the event listener.
+     * @param onEvent The lambda that will be invoked when an event is received.
+     */
+    inline fun setEventListener(
+        activity: FragmentActivity,
+        crossinline onEvent: (event: TEvent) -> Unit,
+    ) {
+        setEventListener(activity.supportFragmentManager, activity, onEvent)
+    }
+
+    /**
+     * Sets an event listener for the specified fragment manager and lifecycle owner.
+     * The `onEvent` lambda will be executed whenever the `sendDialogEvent()` function is called.
+     *
+     * @param fragmentManager The fragment manager instance.
+     * @param lifecycleOwner The lifecycle owner for the event listener.
+     * @param onEvent The lambda that will be invoked when an event is received.
+     */
+    inline fun setEventListener(
+        fragmentManager: FragmentManager,
+        lifecycleOwner: LifecycleOwner,
+        crossinline onEvent: (event: TEvent) -> Unit,
+    ) {
+        fragmentManager.setFragmentResultListener(
+            dialogId!!,
+            lifecycleOwner,
+        ) { _, bundle ->
+            onEvent(bundle.getParcelable("event")!!)
+        }
+    }
+
+    /**
+     * Clears the previously set dialog event.
+     */
+    inline fun clearDialogEvent() = clearFragmentResult(dialogId!!)
+
+    /**
+     * Clears the previously set dialog event listener.
+     */
+    inline fun clearDialogEventListener() = clearFragmentResultListener(dialogId!!)
 
 
-	protected companion object {
+    /**
+     * Sends an event that will be received by the `onEvent` lambda parameter of the `setOnEventListener()` function.
+     *
+     * @param event The event object to send.
+     */
+    protected inline fun sendDialogEvent(event: TEvent) = setFragmentResult(dialogId!!, bundleOf("event" to event))
 
-		/**
-		 * Returns a new instance of the given SimpleBottomSheetDialog in getNewInstance
-		 * with the specified id and args.
-		 *
-		 * @param id Should identify a single `SimpleBottomSheetDialogFragment` instance. Use it when multiple instances
-		 * are required in the same fragment or activity to allow a correct behavior.
-		 * @param args The data to pass when instantiating the dialog.
-		 * @param getNewInstance A lambda function that creates the instance of the desired `SimpleBottomSheetDialogFragment`.
-		 *
-		 * @return A new instance of the specified `SimpleBottomSheetDialogFragment`.
-		 */
-		inline fun <TArgs : Parcelable, T : SimpleBottomSheetDialogFragment<TArgs, *>> baseNewInstance(
-			id: String? = null,
-			args: TArgs? = null,
-			getNewInstance: () -> T,
-		): T {
-			return getNewInstance().apply {
-				dialogId = id ?: SimpleBottomSheetDialogFragment::class.qualifiedName
-				if (args != null) arguments = createBundleFromDialogArgs(args)
-			}
-		}
-	}
+    /**
+     * Retrieves the arguments (`TArgs`) that were passed when the dialog it's shown or instantiated using a custom `newInstance()` function.
+     *
+     * @return The dialog arguments if available, or null if no arguments were provided.
+     */
+    protected inline val dialogArguments: TArgs? get() = arguments?.getParcelable("args")
+
+    /**
+     * Creates a bundle with the specified `TArgs`.
+     *
+     * @param args The arguments object to include in the bundle.
+     * @return A bundle containing the specified arguments.
+     */
+    protected inline fun createBundleFromDialogArgs(args: TArgs): Bundle = bundleOf("args" to args)
+
+
+    protected companion object {
+
+        /**
+         * Returns a new instance of the given SimpleBottomSheetDialog in getNewInstance
+         * with the specified id and args.
+         *
+         * @param id Should identify a single `SimpleBottomSheetDialogFragment` instance. Use it when multiple instances
+         * are required in the same fragment or activity to allow a correct behavior.
+         * @param args The data to pass when instantiating the dialog.
+         * @param getNewInstance A lambda function that creates the instance of the desired `SimpleBottomSheetDialogFragment`.
+         *
+         * @return A new instance of the specified `SimpleBottomSheetDialogFragment`.
+         */
+        inline fun <TArgs : Parcelable, T : SimpleBottomSheetDialogFragment<TArgs, *>> baseNewInstance(
+            id: String? = null,
+            args: TArgs? = null,
+            getNewInstance: () -> T,
+        ): T {
+            return getNewInstance().apply {
+                dialogId = id ?: SimpleBottomSheetDialogFragment::class.qualifiedName
+                if (args != null) arguments = createBundleFromDialogArgs(args)
+            }
+        }
+    }
 }

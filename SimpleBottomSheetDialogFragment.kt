@@ -103,6 +103,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
  */
 abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parcelable> : BottomSheetDialogFragment {
 
+    init {
+        dialogId = this::class.qualifiedName
+    }
+
     constructor()
 
     constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
@@ -283,8 +287,10 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
             getNewInstance: () -> T,
         ): T {
             return getNewInstance().apply {
-                dialogId = id ?: SimpleBottomSheetDialogFragment::class.qualifiedName
-                if (args != null) arguments = createBundleFromDialogArgs(args)
+                dialogId = id ?: this::class.qualifiedName
+                if (args != null) {
+                    arguments = createBundleFromDialogArgs(args)
+                }
             }
         }
     }

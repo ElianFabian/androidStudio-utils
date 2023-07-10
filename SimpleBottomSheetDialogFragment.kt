@@ -171,7 +171,7 @@ abstract class SimpleBottomSheetDialogFragment<TArgs : Parcelable, TEvent : Parc
  *
  * @return The dialog arguments if available, or null if no arguments were provided.
  */
-fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.getDialogArguments(): TArgs? {
+fun <TArgs : Parcelable> SimpleBottomSheetDialogFragment<TArgs, *>.getDialogArguments(): TArgs? {
 	return arguments?.getParcelable("SimpleBottomSheetDialogFragment.Args")
 }
 
@@ -183,7 +183,7 @@ fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TA
  *
  * @throws IllegalStateException if the specified fragment is the same as the dialog instance.
  */
-inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.showDialog(
+inline fun <TArgs : Parcelable> SimpleBottomSheetDialogFragment<TArgs, *>.showDialog(
 	fragment: Fragment,
 	args: TArgs? = null,
 ) {
@@ -200,7 +200,7 @@ inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFrag
  * @param activity The activity that shows the dialog.
  * @param args The arguments to be passed to the dialog.
  */
-inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.showDialog(
+inline fun <TArgs : Parcelable> SimpleBottomSheetDialogFragment<TArgs, *>.showDialog(
 	activity: FragmentActivity,
 	args: TArgs? = null,
 ) {
@@ -213,7 +213,7 @@ inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFrag
  * @param manager The FragmentManager instance to show the dialog.
  * @param args The arguments to be passed to the dialog.
  */
-fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.showDialog(
+fun <TArgs : Parcelable> SimpleBottomSheetDialogFragment<TArgs, *>.showDialog(
 	manager: FragmentManager,
 	args: TArgs? = null,
 ) {
@@ -229,7 +229,7 @@ fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TA
  *
  * @param event The event object to send.
  */
-fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.sendDialogEvent(event: TEvent) {
+fun <TEvent : Parcelable> SimpleBottomSheetDialogFragment<*, TEvent>.sendDialogEvent(event: TEvent) {
 	setFragmentResult(dialogId ?: return, bundleOf("SimpleBottomSheetDialogFragment.Event" to event))
 }
 
@@ -242,7 +242,7 @@ fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TA
  *
  * @throws IllegalArgumentException if attempting to set an event listener on the same dialog fragment instance.
  */
-inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.setEventListener(
+inline fun <TEvent : Parcelable> SimpleBottomSheetDialogFragment<*, TEvent>.setEventListener(
 	fragment: Fragment,
 	crossinline onEvent: (event: TEvent) -> Unit,
 ) {
@@ -260,7 +260,7 @@ inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFrag
  * @param activity The FragmentActivity instance on which to set the event listener.
  * @param onEvent The lambda that will be invoked when an event is received.
  */
-inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.setEventListener(
+inline fun <TEvent : Parcelable> SimpleBottomSheetDialogFragment<*, TEvent>.setEventListener(
 	activity: FragmentActivity,
 	crossinline onEvent: (event: TEvent) -> Unit,
 ) {
@@ -275,7 +275,7 @@ inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFrag
  * @param lifecycleOwner The lifecycle owner for the event listener.
  * @param onEvent The lambda that will be invoked when an event is received.
  */
-inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.setEventListener(
+inline fun <TEvent : Parcelable> SimpleBottomSheetDialogFragment<*, TEvent>.setEventListener(
 	fragmentManager: FragmentManager,
 	lifecycleOwner: LifecycleOwner,
 	crossinline onEvent: (event: TEvent) -> Unit,
@@ -289,18 +289,17 @@ inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFrag
 	}
 }
 
-
 /**
  * Clears the previously set dialog event.
  */
-inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.clearDialogEvent() {
+inline fun SimpleBottomSheetDialogFragment<*, *>.clearDialogEvent() {
 	clearFragmentResult(dialogId ?: return)
 }
 
 /**
  * Clears the previously set dialog event listener.
  */
-inline fun <TArgs : Parcelable, TEvent : Parcelable> SimpleBottomSheetDialogFragment<TArgs, TEvent>.clearDialogEventListener() {
+inline fun SimpleBottomSheetDialogFragment<*, *>.clearDialogEventListener() {
 	clearFragmentResultListener(dialogId ?: return)
 }
 

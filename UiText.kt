@@ -1,7 +1,5 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package com.elian.chatapp.core.util
-
 import android.content.Context
 import androidx.annotation.BoolRes
 import androidx.annotation.IntegerRes
@@ -112,6 +110,7 @@ private inline fun valueAsArg(value: Any?): UiTextArg? = when (value) {
 	is String,
 	is Boolean,
 	is Char,
+	is Byte,
 	is Short,
 	is Int,
 	is Long,

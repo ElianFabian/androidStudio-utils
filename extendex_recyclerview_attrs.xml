@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ExtendedRecyclerView">
+        <attr name="itemSpacing" format="dimension" />
+        <attr name="horizontalItemSpacing" format="dimension" />
+        <attr name="verticalItemSpacing" format="dimension" />
+    </declare-styleable>
+</resources>

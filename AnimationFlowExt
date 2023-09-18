@@ -53,7 +53,7 @@ fun Flow<Int>.animateFlow(
 fun Flow<Float>.animateFlow(
     durationInMillis: (previousValue: Float, currentValue: Float) -> Long = { _, _ -> 500 },
     interpolator: Interpolator = LinearInterpolator(),
-): Flow<Float> = callbackFlow<Float> {
+): Flow<Float> = callbackFlow {
     var previousValue: Float? = null
 
     val animator = ValueAnimator().apply {

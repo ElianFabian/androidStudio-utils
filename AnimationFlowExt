@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-@JvmName("animateIntFlow")
-fun Flow<Int>.animateFlow(
+@JvmName("animateInt")
+fun Flow<Int>.animate(
     durationInMillis: (previousValue: Int, currentValue: Int) -> Long = { _, _ -> 500 },
     interpolator: Interpolator = LinearInterpolator(),
 ): Flow<Int> = callbackFlow {
@@ -49,8 +49,8 @@ fun Flow<Int>.animateFlow(
     }
 }.distinctUntilChanged()
 
-@JvmName("animateFloatFlow")
-fun Flow<Float>.animateFlow(
+@JvmName("animateFloat")
+fun Flow<Float>.animate(
     durationInMillis: (previousValue: Float, currentValue: Float) -> Long = { _, _ -> 500 },
     interpolator: Interpolator = LinearInterpolator(),
 ): Flow<Float> = callbackFlow {
@@ -130,8 +130,8 @@ fun Flow<Int>.animateArgbFlow(
 }.distinctUntilChanged()
 
 @Suppress("UNCHECKED_CAST")
-@JvmName("animateAnyFlow")
-fun <T : Any> Flow<T>.animateFlow(
+@JvmName("animateAny")
+fun <T : Any> Flow<T>.animate(
     evaluator: TypeEvaluator<T>,
     durationInMillis: (previousValue: T, currentValue: T) -> Long = { _, _ -> 500 },
     interpolator: Interpolator = LinearInterpolator(),

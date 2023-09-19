@@ -8,167 +8,392 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlin.math.abs
 
 @JvmName("animateInt")
 fun Flow<Int>.animate(
-    durationInMillis: (previousValue: Int, currentValue: Int) -> Long = { _, _ -> 500 },
-    interpolator: Interpolator = LinearInterpolator(),
+	durationInMillis: Long,
+	interpolator: Interpolator = LinearInterpolator(),
 ): Flow<Int> = callbackFlow {
-    var previousValue: Int? = null
+	var previousValue: Int? = null
 
-    val animator = ValueAnimator().apply {
-        this.interpolator = interpolator
-    }
+	val animator = ValueAnimator().apply {
+		this.interpolator = interpolator
+		this.duration = durationInMillis
+	}
 
-    val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
-        trySend(animation.animatedValue as Int)
-    }
-    animator.addUpdateListener(updateListener)
+	val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+		trySend(animation.animatedValue as Int)
+	}
+	animator.addUpdateListener(updateListener)
 
-    collect { newValue ->
-        if (animator.isRunning) {
-            val currentAnimatedValue = animator.animatedValue as Int
-            animator.duration = durationInMillis(currentAnimatedValue, newValue)
-            animator.setIntValues(currentAnimatedValue, newValue)
-            animator.start()
-        }
-        else if (previousValue == null) {
-            send(newValue)
-        }
-        else {
-            animator.setIntValues(previousValue!!, newValue)
-            animator.duration = durationInMillis(previousValue!!, newValue)
-            animator.start()
-        }
-        previousValue = newValue
-    }
+	collect { newValue ->
+		if (animator.isRunning) {
+			val currentAnimatedValue = animator.animatedValue as Int
+			animator.setIntValues(currentAnimatedValue, newValue)
+			animator.start()
+		}
+		else if (previousValue == null) {
+			send(newValue)
+		}
+		else {
+			animator.setIntValues(previousValue!!, newValue)
+			animator.start()
+		}
+		previousValue = newValue
+	}
 
-    awaitClose {
-        animator.removeUpdateListener(updateListener)
-        animator.cancel()
-    }
+	awaitClose {
+		animator.removeUpdateListener(updateListener)
+		animator.cancel()
+	}
+}.distinctUntilChanged()
+
+@JvmName("animateInt")
+fun Flow<Int>.animate(
+	speed: Float,
+	interpolator: Interpolator = LinearInterpolator(),
+): Flow<Int> = callbackFlow {
+	var previousValue: Int? = null
+
+	val animator = ValueAnimator().apply {
+		this.interpolator = interpolator
+	}
+
+	val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+		trySend(animation.animatedValue as Int)
+	}
+	animator.addUpdateListener(updateListener)
+
+	collect { newValue ->
+
+		if (animator.isRunning) {
+			val currentAnimatedValue = animator.animatedValue as Int
+
+			val delta = abs(newValue - currentAnimatedValue)
+			val durationInMillis = (delta / speed).toLong()
+			
+			println("$$$$ delta1 = $delta, durationInMillis = $durationInMillis")
+
+			animator.apply {
+				setIntValues(currentAnimatedValue, newValue)
+				this.duration = durationInMillis
+				animator.start()
+			}
+		}
+		else if (previousValue == null) {
+			send(newValue)
+		}
+		else {
+			animator.apply {
+				val duration = if (previousValue != null) {
+					val delta = abs(newValue - previousValue!!)
+					(delta / speed).toLong()
+				}
+				else 0L
+				
+				
+				println("$$$$ delta2 = ${abs(newValue - previousValue!!)}, duration = $duration")
+
+				setIntValues(previousValue!!, newValue)
+				this.duration = duration
+				animator.start()
+			}
+		}
+		previousValue = newValue
+	}
+
+	awaitClose {
+		animator.removeUpdateListener(updateListener)
+		animator.cancel()
+	}
 }.distinctUntilChanged()
 
 @JvmName("animateFloat")
 fun Flow<Float>.animate(
-    durationInMillis: (previousValue: Float, currentValue: Float) -> Long = { _, _ -> 500 },
-    interpolator: Interpolator = LinearInterpolator(),
-): Flow<Float> = callbackFlow {
-    var previousValue: Float? = null
+	durationInMillis: Long,
+	interpolator: Interpolator = LinearInterpolator(),
+): Flow<Float> = callbackFlow<Float> {
+	var previousValue: Float? = null
 
-    val animator = ValueAnimator().apply {
-        this.interpolator = interpolator
-    }
+	val animator = ValueAnimator().apply {
+		this.interpolator = interpolator
+		this.duration = durationInMillis
+	}
 
-    val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
-        trySend(animation.animatedValue as Float)
-    }
-    animator.addUpdateListener(updateListener)
+	val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+		trySend(animation.animatedValue as Float)
+	}
+	animator.addUpdateListener(updateListener)
 
-    collect { newValue ->
-        if (animator.isRunning) {
-            val currentAnimatedValue = animator.animatedValue as Float
-            animator.duration = durationInMillis(currentAnimatedValue, newValue)
-            animator.setFloatValues(currentAnimatedValue, newValue)
-            animator.start()
-        }
-        else if (previousValue == null) {
-            send(newValue)
-        }
-        else {
-            animator.setFloatValues(previousValue!!, newValue)
-            animator.duration = durationInMillis(previousValue!!, newValue)
-            animator.start()
-        }
-        previousValue = newValue
-    }
+	collect { newValue ->
+		if (animator.isRunning) {
+			val currentAnimatedValue = animator.animatedValue as Float
+			animator.setFloatValues(currentAnimatedValue, newValue)
+			animator.start()
+		}
+		else if (previousValue == null) {
+			send(newValue)
+		}
+		else {
+			animator.setFloatValues(previousValue!!, newValue)
+			animator.start()
+		}
+		previousValue = newValue
+	}
 
-    awaitClose {
-        animator.removeUpdateListener(updateListener)
-        animator.cancel()
-    }
+	awaitClose {
+		animator.removeUpdateListener(updateListener)
+		animator.cancel()
+	}
 }.distinctUntilChanged()
 
-fun Flow<Int>.animateArgbFlow(
-    duration: (previousValue: Int, currentValue: Int) -> Long = { _, _ -> 500 },
-    interpolator: TimeInterpolator = LinearInterpolator(),
+@JvmName("animateFloat")
+fun Flow<Float>.animate(
+	speed: Float,
+	interpolator: Interpolator = LinearInterpolator(),
+): Flow<Float> = callbackFlow<Float> {
+	var previousValue: Float? = null
+
+	val animator = ValueAnimator().apply {
+		this.interpolator = interpolator
+	}
+
+	val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+		trySend(animation.animatedValue as Float)
+	}
+	animator.addUpdateListener(updateListener)
+
+	collect { newValue ->
+		if (animator.isRunning) {
+			val currentAnimatedValue = animator.animatedValue as Float
+
+			val delta = abs(newValue - currentAnimatedValue)
+			val durationInMillis = (delta / speed).toLong()
+
+			animator.apply {
+				setFloatValues(currentAnimatedValue, newValue)
+				this.duration = durationInMillis
+				animator.start()
+			}
+		}
+		else if (previousValue == null) {
+			send(newValue)
+		}
+		else {
+			animator.apply {
+				val duration = if (previousValue != null) {
+					val delta = abs(newValue - previousValue!!)
+					(delta / speed).toLong()
+				}
+				else 0L
+
+				setFloatValues(previousValue!!, newValue)
+				this.duration = duration
+				animator.start()
+			}
+		}
+		previousValue = newValue
+	}
+
+	awaitClose {
+		animator.removeUpdateListener(updateListener)
+		animator.cancel()
+	}
+}.distinctUntilChanged()
+
+fun Flow<Int>.animateArgb(
+	durationInMillis: Long,
+	interpolator: TimeInterpolator = LinearInterpolator(),
 ): Flow<Int> = callbackFlow {
-    var previousValue: Int? = null
+	var previousValue: Int? = null
 
-    val animator = ValueAnimator().apply {
-        this.interpolator = interpolator
-        setEvaluator(ArgbEvaluator())
-    }
+	val animator = ValueAnimator().apply {
+		this.interpolator = interpolator
+		this.duration = durationInMillis
+		setEvaluator(ArgbEvaluator())
+	}
 
-    val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
-        trySend(animation.animatedValue as Int)
-    }
-    animator.addUpdateListener(updateListener)
+	val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+		trySend(animation.animatedValue as Int)
+	}
+	animator.addUpdateListener(updateListener)
 
-    collect { newValue ->
-        if (animator.isRunning) {
-            val currentAnimatedValue = animator.animatedValue as Int
-            animator.duration = duration(currentAnimatedValue, newValue)
-            animator.setIntValues(currentAnimatedValue, newValue)
-            animator.start()
-        }
-        else if (previousValue == null) {
-            send(newValue)
-        }
-        else {
-            animator.setIntValues(previousValue!!, newValue)
-            animator.duration = duration(previousValue!!, newValue)
-            animator.start()
-        }
-        previousValue = newValue
-    }
+	collect { newValue ->
+		if (animator.isRunning) {
+			val currentAnimatedValue = animator.animatedValue as Int
+			animator.setIntValues(currentAnimatedValue, newValue)
+			animator.start()
+		}
+		else if (previousValue == null) {
+			send(newValue)
+		}
+		else {
+			animator.setIntValues(previousValue!!, newValue)
+			animator.start()
+		}
+		previousValue = newValue
+	}
 
-    awaitClose {
-        animator.removeUpdateListener(updateListener)
-        animator.cancel()
-    }
+	awaitClose {
+		animator.removeUpdateListener(updateListener)
+		animator.cancel()
+	}
+}.distinctUntilChanged()
+
+fun Flow<Int>.animateArgb(
+	speed: Float,
+	interpolator: TimeInterpolator = LinearInterpolator(),
+): Flow<Int> = callbackFlow {
+	var previousValue: Int? = null
+
+	val animator = ValueAnimator().apply {
+		this.interpolator = interpolator
+		setEvaluator(ArgbEvaluator())
+	}
+
+	val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+		trySend(animation.animatedValue as Int)
+	}
+	animator.addUpdateListener(updateListener)
+
+	collect { newValue ->
+		if (animator.isRunning) {
+			val currentAnimatedValue = animator.animatedValue as Int
+
+			val delta = abs(newValue - currentAnimatedValue)
+			val durationInMillis = (delta / speed).toLong()
+
+			animator.apply {
+				setIntValues(currentAnimatedValue, newValue)
+				this.duration = durationInMillis
+				animator.start()
+			}
+		}
+		else if (previousValue == null) {
+			send(newValue)
+		}
+		else {
+			animator.apply {
+				val duration = if (previousValue != null) {
+					val delta = abs(newValue - previousValue!!)
+					(delta / speed).toLong()
+				}
+				else 0L
+
+				setIntValues(previousValue!!, newValue)
+				this.duration = duration
+				animator.start()
+			}
+		}
+		previousValue = newValue
+	}
+
+	awaitClose {
+		animator.removeUpdateListener(updateListener)
+		animator.cancel()
+	}
 }.distinctUntilChanged()
 
 @Suppress("UNCHECKED_CAST")
-@JvmName("animateAny")
 fun <T : Any> Flow<T>.animate(
-    evaluator: TypeEvaluator<T>,
-    durationInMillis: (previousValue: T, currentValue: T) -> Long = { _, _ -> 500 },
-    interpolator: Interpolator = LinearInterpolator(),
+	durationInMillis: Long,
+	evaluator: TypeEvaluator<T>,
+	interpolator: Interpolator = LinearInterpolator(),
 ): Flow<T> = callbackFlow {
-    var previousValue: T? = null
+	var previousValue: T? = null
 
-    val animator = ValueAnimator().apply {
-        this.interpolator = interpolator
-    }
+	val animator = ValueAnimator().apply {
+		this.interpolator = interpolator
+		this.duration = durationInMillis
+	}
 
-    val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
-        trySend(animation.animatedValue as T)
-    }
-    animator.addUpdateListener(updateListener)
+	val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+		trySend(animation.animatedValue as T)
+	}
+	animator.addUpdateListener(updateListener)
 
-    collect { newValue ->
-        if (animator.isRunning) {
-            val currentAnimatedValue = animator.animatedValue as T
-            animator.duration = durationInMillis(currentAnimatedValue, newValue)
-            animator.setObjectValues(currentAnimatedValue, newValue)
-            animator.setEvaluator(evaluator)
-            animator.start()
-        }
-        else if (previousValue == null) {
-            send(newValue)
-        }
-        else {
-            animator.setObjectValues(previousValue!!, newValue)
-            animator.duration = durationInMillis(previousValue!!, newValue)
-            animator.setEvaluator(evaluator)
-            animator.start()
-        }
-        previousValue = newValue
-    }
+	collect { newValue ->
+		if (animator.isRunning) {
+			val currentAnimatedValue = animator.animatedValue as T
+			animator.apply {
+				setObjectValues(currentAnimatedValue, newValue)
+				setEvaluator(evaluator)
+				start()
+			}
+		}
+		else if (previousValue == null) {
+			send(newValue)
+		}
+		else {
+			animator.apply {
+				setObjectValues(previousValue!!, newValue)
+				setEvaluator(evaluator)
+				start()
+			}
+		}
+		previousValue = newValue
+	}
 
-    awaitClose {
-        animator.removeUpdateListener(updateListener)
-        animator.cancel()
-    }
+	awaitClose {
+		animator.removeUpdateListener(updateListener)
+		animator.cancel()
+	}
+}.distinctUntilChanged()
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Any> Flow<T>.animate(
+	speed: Float,
+	evaluator: TypeEvaluator<T>,
+	interpolator: Interpolator = LinearInterpolator(),
+): Flow<T> = callbackFlow {
+	var previousValue: T? = null
+
+	val animator = ValueAnimator().apply {
+		this.interpolator = interpolator
+	}
+
+	val updateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+		trySend(animation.animatedValue as T)
+	}
+	animator.addUpdateListener(updateListener)
+
+	collect { newValue ->
+		if (animator.isRunning) {
+			val currentAnimatedValue = animator.animatedValue as T
+
+			val delta = abs(newValue.hashCode() - currentAnimatedValue.hashCode())
+			val durationInMillis = (delta / speed).toLong()
+
+			animator.apply {
+				setObjectValues(currentAnimatedValue, newValue)
+				setEvaluator(evaluator)
+				this.duration = durationInMillis
+				start()
+			}
+		}
+		else if (previousValue == null) {
+			send(newValue)
+		}
+		else {
+			animator.apply {
+				val duration = if (previousValue != null) {
+					val delta = abs(newValue.hashCode() - previousValue!!.hashCode())
+					(delta / speed).toLong()
+				}
+				else 0L
+
+				setObjectValues(previousValue!!, newValue)
+				setEvaluator(evaluator)
+				this.duration = duration
+				animator.start()
+			}
+		}
+		previousValue = newValue
+	}
+
+	awaitClose {
+		animator.removeUpdateListener(updateListener)
+		animator.cancel()
+	}
 }.distinctUntilChanged()

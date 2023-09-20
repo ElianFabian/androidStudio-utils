@@ -72,8 +72,6 @@ fun Flow<Int>.animate(
 
 			val delta = abs(newValue - currentAnimatedValue)
 			val durationInMillis = (delta / speed).toLong()
-			
-			println("$$$$ delta1 = $delta, durationInMillis = $durationInMillis")
 
 			animator.apply {
 				setIntValues(currentAnimatedValue, newValue)
@@ -91,9 +89,6 @@ fun Flow<Int>.animate(
 					(delta / speed).toLong()
 				}
 				else 0L
-				
-				
-				println("$$$$ delta2 = ${abs(newValue - previousValue!!)}, duration = $duration")
 
 				setIntValues(previousValue!!, newValue)
 				this.duration = duration

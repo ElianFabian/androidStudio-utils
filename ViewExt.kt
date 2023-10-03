@@ -12,9 +12,11 @@ private val View.onClickListeners: MutableList<OnClickListener>
 	}
 
 fun View.addOnClickListener(listener: OnClickListener) {
-	// Do nothing if setOnClickListener was used to prevent weird behaviors.
-	// This function is not designed to be used with setOnClickListener.
 	if (getTag(ON_CLICK_LISTENERS_KEY) == null && hasOnClickListeners()) {
+		Log.w(
+			"ViewExt.addOnClickListener",
+			"addOnClickListener() should not be used if you have already used setOnClickListener()",
+		)
 		return
 	}
 

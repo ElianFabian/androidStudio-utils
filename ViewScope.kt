@@ -45,7 +45,7 @@ private class ViewCoroutineScopeImpl(
 	View.OnAttachStateChangeListener,
 	LifecycleEventObserver {
 
-	 val lifecycle = view.findViewTreeLifecycleOwner()?.lifecycle
+	private val lifecycle = view.findViewTreeLifecycleOwner()?.lifecycle
 
 	init {
 		if (lifecycle?.currentState == Lifecycle.State.DESTROYED || !view.isAttachedToWindow) {

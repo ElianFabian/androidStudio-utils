@@ -42,28 +42,22 @@ private class ViewCoroutineScopeImpl(
 	override val view: View,
 	override val coroutineContext: CoroutineContext,
 ) : ViewCoroutineScope(),
-	View.OnAttachStateChangeListener,
-	LifecycleEventObserver {
-
-	private val lifecycle = view.findViewTreeLifecycleOwner()?.lifecycle
+	View.OnAttachStateChangeListener {
 
 	init {
-		if (lifecycle?.currentState == Lifecycle.State.DESTROYED || !view.isAttachedToWindow) {
+		if (!view.isAttachedToWindow) {
 			coroutineContext.cancel()
 		}
 	}
 
 	fun register() {
 		launch(Dispatchers.Main.immediate) {
-			val currentState = lifecycle?.currentState
-
-			if (currentState != null && currentState >= Lifecycle.State.INITIALIZED) {
-				lifecycle?.addObserver(this@ViewCoroutineScopeImpl)
-				view.addOnAttachStateChangeListener(this@ViewCoroutineScopeImpl)
-			}
-			else {
+			if (!view.isAttachedToWindow) {
 				coroutineContext.cancel()
+				return@launch
 			}
+
+			view.addOnAttachStateChangeListener(this@ViewCoroutineScopeImpl)
 		}
 	}
 
@@ -72,18 +66,6 @@ private class ViewCoroutineScopeImpl(
 	}
 
 	override fun onViewDetachedFromWindow(v: View) {
-		cancelViewScope()
-	}
-
-	override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-		val currentState = lifecycle?.currentState
-		if (currentState != null && currentState <= Lifecycle.State.DESTROYED) {
-			cancelViewScope()
-		}
-	}
-
-	private fun cancelViewScope() {
-		lifecycle?.removeObserver(this)
 		view.removeOnAttachStateChangeListener(this)
 		coroutineContext.cancel()
 		view.setTag(JOB_KEY, null)

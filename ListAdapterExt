@@ -6,6 +6,7 @@ import kotlin.coroutines.resume
 suspend fun <T : Any> ListAdapter<T, *>.awaitSubmitListCompletion(
     predicate: (previousList: List<T>, currentList: List<T>) -> Boolean = { _, _ -> true },
 ) {
+    @Suppress("UNCHECKED_CAST")
     val differ = javaClass.superclass.getDeclaredField("mDiffer")
         .apply { isAccessible = true }
         .get(this) as AsyncListDiffer<T>

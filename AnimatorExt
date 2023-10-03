@@ -9,7 +9,6 @@ suspend fun Animator.awaitAnimationStart() {
                 removeListener(this)
                 continuation.resume(Unit)
             }
-
             override fun onAnimationEnd(animation: Animator?) {}
             override fun onAnimationCancel(animation: Animator?) {}
             override fun onAnimationRepeat(animation: Animator?) {}
@@ -28,7 +27,6 @@ suspend fun Animator.awaitAnimationEnd() {
                 removeListener(this)
                 continuation.resume(Unit)
             }
-
             override fun onAnimationCancel(animation: Animator?) {}
             override fun onAnimationRepeat(animation: Animator?) {}
         }
@@ -46,7 +44,6 @@ suspend fun Animator.awaitAnimationCancel() {
                 removeListener(this)
                 continuation.resume(Unit)
             }
-
             override fun onAnimationRepeat(animation: Animator?) {}
         }
 

@@ -34,16 +34,18 @@ val View.viewScope: CoroutineScope
 		return newScope
 	}
 
-abstract class ViewCoroutineScope : CoroutineScope
+abstract class ViewCoroutineScope : CoroutineScope {
+	protected abstract val view: View
+}
 
 private class ViewCoroutineScopeImpl(
-	private val view: View,
+	override val view: View,
 	override val coroutineContext: CoroutineContext,
 ) : ViewCoroutineScope(),
 	View.OnAttachStateChangeListener,
 	LifecycleEventObserver {
 
-	private val lifecycle = view.findViewTreeLifecycleOwner()?.lifecycle
+	 val lifecycle = view.findViewTreeLifecycleOwner()?.lifecycle
 
 	init {
 		if (lifecycle?.currentState == Lifecycle.State.DESTROYED || !view.isAttachedToWindow) {

@@ -16,7 +16,7 @@ suspend fun Animator.awaitAnimationStart() {
         }
 
         addListener(listener)
-        
+
         continuation.invokeOnCancellation {
             removeListener(listener)
         }
@@ -59,8 +59,8 @@ suspend fun Animator.awaitAnimationCancel() {
         }
 
         addListener(listener)
-        
-        continuation.invokeOnCancellation { 
+
+        continuation.invokeOnCancellation {
             removeListener(listener)
         }
     }
@@ -79,8 +79,8 @@ suspend fun Animator.awaitAnimationRepeat() {
         }
 
         addListener(listener)
-        
-        continuation.invokeOnCancellation { 
+
+        continuation.invokeOnCancellation {
             removeListener(listener)
         }
     }
@@ -98,8 +98,8 @@ suspend fun Animator.awaitPause() {
         }
 
         addPauseListener(listener)
-        
-        continuation.invokeOnCancellation { 
+
+        continuation.invokeOnCancellation {
             removePauseListener(listener)
         }
     }
@@ -116,8 +116,8 @@ suspend fun Animator.awaitResume() {
         }
 
         addPauseListener(listener)
-        
-        continuation.invokeOnCancellation { 
+
+        continuation.invokeOnCancellation {
             removePauseListener(listener)
         }
     }

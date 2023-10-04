@@ -9,12 +9,17 @@ suspend fun Animator.awaitAnimationStart() {
                 removeListener(this)
                 continuation.resume(Unit)
             }
+
             override fun onAnimationEnd(animation: Animator?) {}
             override fun onAnimationCancel(animation: Animator?) {}
             override fun onAnimationRepeat(animation: Animator?) {}
         }
 
         addListener(listener)
+        
+        continuation.invokeOnCancellation {
+            removeListener(listener)
+        }
     }
 }
 
@@ -27,11 +32,16 @@ suspend fun Animator.awaitAnimationEnd() {
                 removeListener(this)
                 continuation.resume(Unit)
             }
+
             override fun onAnimationCancel(animation: Animator?) {}
             override fun onAnimationRepeat(animation: Animator?) {}
         }
 
         addListener(listener)
+
+        continuation.invokeOnCancellation {
+            removeListener(listener)
+        }
     }
 }
 
@@ -44,10 +54,15 @@ suspend fun Animator.awaitAnimationCancel() {
                 removeListener(this)
                 continuation.resume(Unit)
             }
+
             override fun onAnimationRepeat(animation: Animator?) {}
         }
 
         addListener(listener)
+        
+        continuation.invokeOnCancellation { 
+            removeListener(listener)
+        }
     }
 }
 
@@ -64,6 +79,10 @@ suspend fun Animator.awaitAnimationRepeat() {
         }
 
         addListener(listener)
+        
+        continuation.invokeOnCancellation { 
+            removeListener(listener)
+        }
     }
 }
 
@@ -79,6 +98,10 @@ suspend fun Animator.awaitPause() {
         }
 
         addPauseListener(listener)
+        
+        continuation.invokeOnCancellation { 
+            removePauseListener(listener)
+        }
     }
 }
 
@@ -93,5 +116,9 @@ suspend fun Animator.awaitResume() {
         }
 
         addPauseListener(listener)
+        
+        continuation.invokeOnCancellation { 
+            removePauseListener(listener)
+        }
     }
 }

@@ -25,9 +25,9 @@ private data class PluralsResource(
 ) : UiText
 
 
-private val EmptyUiText: UiText = DynamicString("")
+private val emptyUiText: UiText = DynamicString("")
 
-fun emptyUiText(): UiText = EmptyUiText
+fun emptyUiText(): UiText = emptyUiText
 
 fun UiText(value: String?): UiText = when {
 	value.isNullOrEmpty() -> emptyUiText()

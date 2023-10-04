@@ -85,20 +85,20 @@ sealed interface UiTextArg
 private value class ValueArg(val value: Any) : UiTextArg
 
 @JvmInline
-private value class BooleanResourceArg(@BoolRes val value: Int) : UiTextArg
+private value class BooleanResourceArg(@BoolRes val resId: Int) : UiTextArg
 
 @JvmInline
-private value class IntegerResourceArg(@IntegerRes val value: Int) : UiTextArg
+private value class IntegerResourceArg(@IntegerRes val resId: Int) : UiTextArg
 
 private data class StringResourceArg(
 	@StringRes
-	val value: Int,
+	val resId: Int,
 	val args: List<UiTextArg?> = emptyList(),
 ) : UiTextArg
 
 private data class PluralsResourceArg(
 	@PluralsRes
-	val value: Int,
+	val resId: Int,
 	val quantity: Int,
 	val args: List<UiTextArg?> = emptyList(),
 ) : UiTextArg
@@ -124,16 +124,16 @@ private fun UiTextArg?.getValue(context: Context): Any? {
 
 	return when (this) {
 		is ValueArg           -> value
-		is BooleanResourceArg -> context.resources.getBoolean(value)
-		is IntegerResourceArg -> context.resources.getInteger(value)
+		is BooleanResourceArg -> context.resources.getBoolean(resId)
+		is IntegerResourceArg -> context.resources.getInteger(resId)
 		is StringResourceArg  -> {
-			context.getString(value).format(
+			context.getString(resId).format(
 				*args.map { arg -> arg.getValue(context) }.toTypedArray()
 			)
 		}
 		is PluralsResourceArg -> {
 			context.resources.getQuantityString(
-				value,
+				resId,
 				quantity,
 				*args.map { arg -> arg.getValue(context) }.toTypedArray(),
 			)
@@ -141,21 +141,21 @@ private fun UiTextArg?.getValue(context: Context): Any? {
 	}
 }
 
-fun booleanResArg(@BoolRes string: Int): UiTextArg = BooleanResourceArg(string)
+fun booleanResArg(@BoolRes resId: Int): UiTextArg = BooleanResourceArg(resId)
 
-fun integerResArg(@IntegerRes string: Int): UiTextArg = IntegerResourceArg(string)
+fun integerResArg(@IntegerRes resId: Int): UiTextArg = IntegerResourceArg(resId)
 
 fun stringResArg(
 	@StringRes
-	string: Int,
+	resId: Int,
 	args: List<UiTextArg?> = emptyList(),
-): UiTextArg = StringResourceArg(string, args)
+): UiTextArg = StringResourceArg(resId, args)
 
 fun pluralsResArg(
 	@PluralsRes
-	string: Int,
+	resId: Int,
 	quantity: Int,
 	args: List<UiTextArg?> = emptyList(),
-): UiTextArg = PluralsResourceArg(string, quantity, args)
+): UiTextArg = PluralsResourceArg(resId, quantity, args)
 
 fun uiArgsOf(vararg args: Any?): List<UiTextArg?> = args.map { arg -> valueAsArg(arg) }

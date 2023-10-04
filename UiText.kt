@@ -53,6 +53,28 @@ fun UiText(
 )
 
 
+private fun UiTextArg?.getValue(context: Context): Any? {
+	if (this == null) return null
+
+	return when (this) {
+		is ValueArg           -> value
+		is BooleanResourceArg -> context.resources.getBoolean(resId)
+		is IntegerResourceArg -> context.resources.getInteger(resId)
+		is StringResourceArg  -> {
+			context.getString(resId).format(
+				*args.map { arg -> arg.getValue(context) }.toTypedArray()
+			)
+		}
+		is PluralsResourceArg -> {
+			context.resources.getQuantityString(
+				resId,
+				quantity,
+				*args.map { arg -> arg.getValue(context) }.toTypedArray(),
+			)
+		}
+	}
+}
+
 fun UiText?.toString(context: Context?): String {
 	if (context == null) return ""
 
@@ -104,6 +126,24 @@ private data class PluralsResourceArg(
 ) : UiTextArg
 
 
+fun stringResArg(
+	@StringRes
+	resId: Int,
+	args: List<UiTextArg?> = emptyList(),
+): UiTextArg = StringResourceArg(resId, args)
+
+fun pluralsResArg(
+	@PluralsRes
+	resId: Int,
+	quantity: Int,
+	args: List<UiTextArg?> = emptyList(),
+): UiTextArg = PluralsResourceArg(resId, quantity, args)
+
+fun integerResArg(@IntegerRes resId: Int): UiTextArg = IntegerResourceArg(resId)
+
+fun booleanResArg(@BoolRes resId: Int): UiTextArg = BooleanResourceArg(resId)
+
+
 private inline fun valueAsArg(value: Any?): UiTextArg? = when (value) {
 	null         -> null
 	is UiTextArg -> value
@@ -118,44 +158,5 @@ private inline fun valueAsArg(value: Any?): UiTextArg? = when (value) {
 	is Double    -> ValueArg(value)
 	else         -> ValueArg(value.toString())
 }
-
-private fun UiTextArg?.getValue(context: Context): Any? {
-	if (this == null) return null
-
-	return when (this) {
-		is ValueArg           -> value
-		is BooleanResourceArg -> context.resources.getBoolean(resId)
-		is IntegerResourceArg -> context.resources.getInteger(resId)
-		is StringResourceArg  -> {
-			context.getString(resId).format(
-				*args.map { arg -> arg.getValue(context) }.toTypedArray()
-			)
-		}
-		is PluralsResourceArg -> {
-			context.resources.getQuantityString(
-				resId,
-				quantity,
-				*args.map { arg -> arg.getValue(context) }.toTypedArray(),
-			)
-		}
-	}
-}
-
-fun booleanResArg(@BoolRes resId: Int): UiTextArg = BooleanResourceArg(resId)
-
-fun integerResArg(@IntegerRes resId: Int): UiTextArg = IntegerResourceArg(resId)
-
-fun stringResArg(
-	@StringRes
-	resId: Int,
-	args: List<UiTextArg?> = emptyList(),
-): UiTextArg = StringResourceArg(resId, args)
-
-fun pluralsResArg(
-	@PluralsRes
-	resId: Int,
-	quantity: Int,
-	args: List<UiTextArg?> = emptyList(),
-): UiTextArg = PluralsResourceArg(resId, quantity, args)
 
 fun uiArgsOf(vararg args: Any?): List<UiTextArg?> = args.map { arg -> valueAsArg(arg) }

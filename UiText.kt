@@ -53,7 +53,7 @@ fun UiText(
 )
 
 
-fun UiText?.asString(context: Context?): String {
+fun UiText?.toString(context: Context?): String {
 	if (context == null) return ""
 
 	return when (this) {
@@ -72,10 +72,10 @@ fun UiText?.asString(context: Context?): String {
 	}
 }
 
-inline fun List<UiText>.concatAsString(context: Context?, separator: CharSequence = "\n"): String {
+inline fun List<UiText>.concatToString(context: Context?, separator: CharSequence = "\n"): String {
 	if (isEmpty() || context == null) return ""
 
-	return joinToString(separator) { it.asString(context) }
+	return joinToString(separator) { it.toString(context) }
 }
 
 
